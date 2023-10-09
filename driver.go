@@ -55,8 +55,9 @@ type (
 // NewDriver wraps the given driver with a caching layer.
 func NewDriver(drv dialect.Driver, opts ...Option) *Driver {
 	options := &Config{
-		Name:       defaultDriverName,
-		GCInterval: defaultGCInterval,
+		Name:        defaultDriverName,
+		GCInterval:  defaultGCInterval,
+		KeyQueryTTL: defaultGCInterval,
 	}
 	for _, opt := range opts {
 		opt(options)
