@@ -70,10 +70,11 @@ func NewDriver(drv dialect.Driver, opts ...Option) *Driver {
 	}
 	d.Config = options
 	if d.Config.Cache == nil {
-		if d.Config.CacheKey != "" {
-			d.Cache = cache.GetCache(d.Config.CacheKey)
-			if d.Cache == nil {
-				panic(fmt.Errorf("entcache: cache %s not found", d.Config.CacheKey))
+		if d.Config.StoreKey != "" {
+			var err error
+			d.Cache, err = cache.GetCache(d.Config.StoreKey)
+			if err != nil {
+				panic(err)
 			}
 		} else {
 			cnf := conf.NewFromStringMap(map[string]any{

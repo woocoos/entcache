@@ -8,7 +8,7 @@ require (
 	github.com/mattn/go-sqlite3 v1.14.16
 	github.com/mitchellh/hashstructure/v2 v2.0.2
 	github.com/stretchr/testify v1.8.4
-	github.com/tsingsun/woocoo v0.4.1-0.20231007104131-727c230deab0
+	github.com/tsingsun/woocoo v0.4.1
 )
 
 require (

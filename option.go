@@ -24,8 +24,8 @@ type (
 		KeyQueryTTL time.Duration `yaml:"keyQueryTTL" json:"keyQueryTTL"`
 		// GCInterval defines the period of time that the cache will be GC.
 		GCInterval time.Duration `yaml:"gcInterval" json:"gcInterval"`
-		// CacheKey is the key of cache driver
-		CacheKey string `yaml:"cacheKey" json:"cacheKey"`
+		// StoreKey is the driver name of cache driver
+		StoreKey string `yaml:"storeKey" json:"storeKey"`
 		// CachePrefix is the prefix of cache key, avoid key conflict in redis cache
 		CachePrefix string `yaml:"cachePrefix" json:"cachePrefix"`
 		// ChangeSet manages data change

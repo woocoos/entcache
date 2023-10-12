@@ -83,8 +83,8 @@ github.com/stretchr/testify v1.6.1/go.mod h1:6Fq8oRcR53rry900zMqJjRRixrwX3KX962/
 github.com/stretchr/testify v1.7.0/go.mod h1:6Fq8oRcR53rry900zMqJjRRixrwX3KX962/h/Wwjteg=
 github.com/stretchr/testify v1.8.4 h1:CcVxjf3Q8PM0mHUKJCdn+eZZtm5yQwehR5yeSVQQcUk=
 github.com/stretchr/testify v1.8.4/go.mod h1:sz/lmYIOXD/1dqDmKjjqLyZ2RngseejIcXlSw2iwfAo=
-github.com/tsingsun/woocoo v0.4.1-0.20231007104131-727c230deab0 h1:3cRUMOS+vyX9JTVBfJmjyRmYbJIwSQSXFcEkQSfFn+w=
-github.com/tsingsun/woocoo v0.4.1-0.20231007104131-727c230deab0/go.mod h1:TxI9kKZ3bCVn1XMqityH5x5CoLH0qq3/34uHI18/V38=
+github.com/tsingsun/woocoo v0.4.1 h1:0L28AWH8znIOQtabeGKt+hWKNPUEuTGcRuOdYjKFlLA=
+github.com/tsingsun/woocoo v0.4.1/go.mod h1:TxI9kKZ3bCVn1XMqityH5x5CoLH0qq3/34uHI18/V38=
 github.com/vmihailenco/go-tinylfu v0.2.2 h1:H1eiG6HM36iniK6+21n9LLpzx1G9R3DJa2UjUjbynsI=
 github.com/vmihailenco/go-tinylfu v0.2.2/go.mod h1:CutYi2Q9puTxfcolkliPq4npPuofg9N9t8JVrjzwa3Q=
 github.com/vmihailenco/msgpack/v4 v4.3.12/go.mod h1:gborTTJjAo/GWTqqRjrLCn9pgNN+NXzzngzBKDPIqw4=

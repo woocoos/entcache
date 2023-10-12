@@ -92,7 +92,7 @@ func (t *driverSuite) TestDriver() {
 	t.Run("redis", func() {
 		cnfstr := `
 driverName: drvierTest
-cacheKey: drvierTest
+storeKey: drvierTest
 `
 		cnf := conf.NewFromBytes([]byte(cnfstr))
 		cnf.Parser().Set("addrs", []string{t.Redis.Addr()})

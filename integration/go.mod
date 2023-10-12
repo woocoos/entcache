@@ -12,7 +12,7 @@ require (
 	github.com/hashicorp/go-multierror v1.1.1
 	github.com/mattn/go-sqlite3 v1.14.16
 	github.com/stretchr/testify v1.8.4
-	github.com/tsingsun/woocoo v0.4.1-0.20231007104131-727c230deab0
+	github.com/tsingsun/woocoo v0.4.1
 	github.com/vektah/gqlparser/v2 v2.5.8
 	github.com/woocoos/entcache v0.0.0-00010101000000-000000000000
 	golang.org/x/sync v0.3.0
