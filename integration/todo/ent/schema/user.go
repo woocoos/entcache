@@ -9,6 +9,10 @@ import (
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
 	"github.com/woocoos/entcache"
+	genent "github.com/woocoos/entcache/integration/todo/ent"
+	"github.com/woocoos/entcache/integration/todo/ent/hook"
+	"github.com/woocoos/entcache/integration/todo/ent/todo"
+	"github.com/woocoos/entcache/integration/todo/ent/user"
 )
 
 // User holds the schema definition for the User entity.
@@ -43,6 +47,13 @@ func (User) Edges() []ent.Edge {
 func (User) Hooks() []ent.Hook {
 	return []ent.Hook{
 		entcache.DataChangeNotify(),
+		hook.On(func(next ent.Mutator) ent.Mutator {
+			return hook.UserFunc(func(ctx context.Context, m *genent.UserMutation) (genent.Value, error) {
+				id, _ := m.ID()
+				m.Client().Todo.Delete().Where(todo.HasOwnerWith(user.ID(id))).ExecX(ctx)
+				return next.Mutate(ctx, m)
+			})
+		}, ent.OpDeleteOne),
 	}
 }
 
@@ -53,8 +64,6 @@ func (User) Interceptors() []ent.Interceptor {
 		}),
 		ent.InterceptFunc(func(querier ent.Querier) ent.Querier {
 			return ent.QuerierFunc(func(ctx context.Context, query ent.Query) (ent.Value, error) {
-				//qctx := ent.QueryFromContext(ctx)
-
 				v, err := querier.Query(ctx, query)
 				return v, err
 			})

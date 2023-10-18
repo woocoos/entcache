@@ -53,7 +53,7 @@ func ValidColumn(column string) bool {
 //
 //	import _ "github.com/woocoos/entcache/integration/todo/ent/runtime"
 var (
-	Hooks        [1]ent.Hook
+	Hooks        [2]ent.Hook
 	Interceptors [2]ent.Interceptor
 )
 

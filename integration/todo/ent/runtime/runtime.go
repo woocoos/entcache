@@ -30,6 +30,7 @@ func init() {
 	todo.DefaultPriority = todoDescPriority.Default.(int)
 	userHooks := schema.User{}.Hooks()
 	user.Hooks[0] = userHooks[0]
+	user.Hooks[1] = userHooks[1]
 	userInters := schema.User{}.Interceptors()
 	user.Interceptors[0] = userInters[0]
 	user.Interceptors[1] = userInters[1]

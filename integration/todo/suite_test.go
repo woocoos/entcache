@@ -140,3 +140,10 @@ func (s *Suite) TestGraphqlNode() {
 	s.Require().NoError(err)
 	s.Empty(string(resp.Errors))
 }
+
+func (s *Suite) Test_DeleteUser() {
+	ctx := context.Background()
+	us := s.ent.User.Query().AllX(ctx)
+	u, _ := s.ent.User.Get(ctx, us[0].ID)
+	s.ent.User.DeleteOneID(u.ID).ExecX(ctx)
+}

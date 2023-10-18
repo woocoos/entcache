@@ -23,6 +23,7 @@ func WithDriverName(name string) HookOption {
 // DataChangeNotify returns a hook that notifies the cache when a mutation is performed.
 //
 // Driver in method is a placeholder for the cache driver name, which is lazy loaded by NewDriver.
+// Use IDs method to get the ids of the mutation, that also works for XXXOne.
 func DataChangeNotify(opts ...HookOption) ent.Hook {
 	var options = hookOptions{
 		DriverName: defaultDriverName,
@@ -36,27 +37,44 @@ func DataChangeNotify(opts ...HookOption) ent.Hook {
 		driverManager[options.DriverName] = driver
 	}
 	return func(next ent.Mutator) ent.Mutator {
-		return ent.MutateFunc(func(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-			if m.Op().Is(ent.OpCreate) || driver.Config == nil {
+		return ent.MutateFunc(func(ctx context.Context, m ent.Mutation) (v ent.Value, err error) {
+			op := m.Op()
+			if op.Is(ent.OpCreate) || driver.Config == nil {
 				return next.Mutate(ctx, m)
 			}
-			v, err := next.Mutate(ctx, m)
-			if err == nil {
+			var ids []int
+			switch op {
+			case ent.OpUpdateOne, ent.OpUpdate:
+				v, err = next.Mutate(ctx, m)
+				if err == nil {
+					ider, ok := m.(interface {
+						IDs(ctx context.Context) ([]int, error)
+					})
+					if ok {
+						ids, err = ider.IDs(ctx)
+						if err != nil {
+							return nil, err
+						}
+					}
+				}
+			case ent.OpDeleteOne, ent.OpDelete:
 				ider, ok := m.(interface {
 					IDs(ctx context.Context) ([]int, error)
 				})
 				if ok {
-					ids, err := ider.IDs(ctx)
+					ids, err = ider.IDs(ctx)
 					if err != nil {
 						return nil, err
 					}
-					tn := m.Type()
-					var keys = make([]Key, len(ids))
-					for i, id := range ids {
-						keys[i] = NewEntryKey(tn, strconv.Itoa(id))
-					}
-					driver.ChangeSet.Store(keys...)
 				}
+				v, err = next.Mutate(ctx, m)
+			}
+			if len(ids) > 0 {
+				var keys = make([]Key, len(ids))
+				for i, id := range ids {
+					keys[i] = NewEntryKey(m.Type(), strconv.Itoa(id))
+				}
+				driver.ChangeSet.Store(keys...)
 			}
 			return v, err
 		})
