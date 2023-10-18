@@ -37,7 +37,7 @@ func DataChangeNotify(opts ...HookOption) ent.Hook {
 	}
 	return func(next ent.Mutator) ent.Mutator {
 		return ent.MutateFunc(func(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-			if m.Op().Is(ent.OpCreate) {
+			if m.Op().Is(ent.OpCreate) || driver.Config == nil {
 				return next.Mutate(ctx, m)
 			}
 			v, err := next.Mutate(ctx, m)
