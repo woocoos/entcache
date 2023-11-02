@@ -80,6 +80,9 @@ func NewDriver(drv dialect.Driver, opts ...Option) *Driver {
 			cnf := conf.NewFromStringMap(map[string]any{
 				"size": 10000,
 			})
+			if d.Config.HashQueryTTL > 0 {
+				cnf.Parser().Set("ttl", d.Config.HashQueryTTL)
+			}
 			c, err := lfu.NewTinyLFU(cnf)
 			if err != nil {
 				panic(err)

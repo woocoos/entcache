@@ -55,7 +55,8 @@ func (User) Hooks() []ent.Hook {
 
 我们可通过配置方式, 初始化Driver.
 ```yaml
-entcache:  
+entcache:
+  # 可选, Hash类型查询的缓存时间,如果使用内置缓存,则为内置缓存的缓存时间.
   hashQueryTTL: 10s
   keyQueryTTL: 1h
   # 可选, 指定注册的缓存组件.

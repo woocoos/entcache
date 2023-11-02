@@ -6,6 +6,7 @@ import (
 	"github.com/alicebob/miniredis/v2"
 	"github.com/stretchr/testify/suite"
 	"github.com/tsingsun/woocoo/pkg/cache"
+	"github.com/tsingsun/woocoo/pkg/cache/lfu"
 	"github.com/tsingsun/woocoo/pkg/cache/redisc"
 	"github.com/tsingsun/woocoo/pkg/conf"
 	"testing"
@@ -82,6 +83,9 @@ func (t *driverSuite) TestDriver() {
 			"hashQueryTTL": time.Second,
 			"name":         "withTTL",
 		})))
+		tlfu := drv.Cache.(*lfu.TinyLFU)
+		t.Equal(time.Second, tlfu.TTL)
+
 		query(drv)
 		query(drv)
 		time.Sleep(time.Second)
