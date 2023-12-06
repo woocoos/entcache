@@ -64,6 +64,18 @@ type (
 	Option func(*config)
 )
 
+// newConfig creates a new config for the client.
+func newConfig(opts ...Option) config {
+	cfg := config{log: log.Println, hooks: &hooks{}, inters: &inters{}}
+	{{- with $tmpls := matchTemplate "config/init/fields/*" }}
+		{{- range $tmpl := $tmpls }}
+			{{- xtemplate $tmpl $ }}
+		{{- end }}
+	{{- end }}
+	cfg.options(opts...)
+	return cfg
+}
+
 // options applies the options on the config object.
 func (c *config) options(opts ...Option) {
 	for _, opt := range opts {
@@ -350,14 +362,14 @@ func (c *{{ $client }}) Query() *{{ $n.QueryName }} {
         return c.Query().Where({{ $n.Package }}.ID(id)).Only(entcache.WithEntryKey(ctx, "{{ $n.Name }}",id))
     }
 
-    // GetX is like Get, but panics if an error occurs.
-    func (c *{{ $client }}) GetX(ctx context.Context, id {{ $n.ID.Type }}) *{{ $n.Name }} {
-        obj, err := c.Get(ctx, id)
-        if err != nil {
-            panic(err)
-        }
-        return obj
-    }
+	// GetX is like Get, but panics if an error occurs.
+	func (c *{{ $client }}) GetX(ctx context.Context, id {{ $n.ID.Type }}) *{{ $n.Name }} {
+		obj, err := c.Get(ctx, id)
+		if err != nil {
+			panic(err)
+		}
+		return obj
+	}
 {{ end }}
 
 {{ range $e := $n.Edges }}

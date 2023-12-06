@@ -34,6 +34,14 @@ func (tu *TodoUpdate) SetText(s string) *TodoUpdate {
 	return tu
 }
 
+// SetNillableText sets the "text" field if the given value is not nil.
+func (tu *TodoUpdate) SetNillableText(s *string) *TodoUpdate {
+	if s != nil {
+		tu.SetText(*s)
+	}
+	return tu
+}
+
 // SetStatus sets the "status" field.
 func (tu *TodoUpdate) SetStatus(t todo.Status) *TodoUpdate {
 	tu.mutation.SetStatus(t)
@@ -352,6 +360,14 @@ type TodoUpdateOne struct {
 // SetText sets the "text" field.
 func (tuo *TodoUpdateOne) SetText(s string) *TodoUpdateOne {
 	tuo.mutation.SetText(s)
+	return tuo
+}
+
+// SetNillableText sets the "text" field if the given value is not nil.
+func (tuo *TodoUpdateOne) SetNillableText(s *string) *TodoUpdateOne {
+	if s != nil {
+		tuo.SetText(*s)
+	}
 	return tuo
 }
 

@@ -1,18 +1,20 @@
 module github.com/woocoos/entcache/integration
 
-go 1.20
+go 1.21
+
+toolchain go1.21.3
 
 replace github.com/woocoos/entcache => ../
 
 require (
 	entgo.io/contrib v0.4.6-0.20230921075353-58da6fd37195
-	entgo.io/ent v0.12.4
+	entgo.io/ent v0.12.5
 	github.com/99designs/gqlgen v0.17.36
 	github.com/alicebob/miniredis/v2 v2.30.5
 	github.com/hashicorp/go-multierror v1.1.1
 	github.com/mattn/go-sqlite3 v1.14.16
 	github.com/stretchr/testify v1.8.4
-	github.com/tsingsun/woocoo v0.4.1
+	github.com/tsingsun/woocoo v0.4.4-0.20231206033421-d5c4bd64b909
 	github.com/vektah/gqlparser/v2 v2.5.8
 	github.com/woocoos/entcache v0.0.0-00010101000000-000000000000
 	golang.org/x/sync v0.3.0
@@ -56,11 +58,11 @@ require (
 	github.com/yuin/gopher-lua v1.1.0 // indirect
 	github.com/zclconf/go-cty v1.8.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
-	go.uber.org/zap v1.25.0 // indirect
+	go.uber.org/zap v1.26.0 // indirect
 	golang.org/x/exp v0.0.0-20221230185412-738e83a70c30 // indirect
 	golang.org/x/mod v0.10.0 // indirect
-	golang.org/x/sys v0.11.0 // indirect
-	golang.org/x/text v0.12.0 // indirect
+	golang.org/x/sys v0.14.0 // indirect
+	golang.org/x/text v0.14.0 // indirect
 	golang.org/x/tools v0.9.3 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
