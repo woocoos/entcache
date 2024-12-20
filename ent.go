@@ -3,6 +3,7 @@ package entcache
 import (
 	"context"
 	"entgo.io/ent"
+	"log/slog"
 	"strconv"
 )
 
@@ -44,30 +45,53 @@ func DataChangeNotify(opts ...HookOption) ent.Hook {
 			}
 			var ids []int
 			switch op {
-			case ent.OpUpdateOne, ent.OpUpdate:
-				v, err = next.Mutate(ctx, m)
-				if err == nil {
-					ider, ok := m.(interface {
-						IDs(ctx context.Context) ([]int, error)
-					})
-					if ok {
-						ids, err = ider.IDs(ctx)
-						if err != nil {
-							return nil, err
-						}
+			case ent.OpUpdateOne:
+				if v, err = next.Mutate(ctx, m); err != nil {
+					return nil, err
+				}
+				if ider, ok := m.(interface {
+					ID() (id int, exists bool)
+				}); ok {
+					if id, ok := ider.ID(); ok {
+						ids = []int{id}
 					}
 				}
-			case ent.OpDeleteOne, ent.OpDelete:
-				ider, ok := m.(interface {
+			case ent.OpDeleteOne:
+				if ider, ok := m.(interface {
+					ID() (id int, exists bool)
+				}); ok {
+					if id, ok := ider.ID(); ok {
+						ids = []int{id}
+					}
+				}
+				if v, err = next.Mutate(ctx, m); err != nil {
+					return nil, err
+				}
+			case ent.OpUpdate:
+				if v, err = next.Mutate(ctx, m); err != nil {
+					return nil, err
+				}
+				if ider, ok := m.(interface {
 					IDs(ctx context.Context) ([]int, error)
-				})
-				if ok {
+				}); ok {
 					ids, err = ider.IDs(ctx)
 					if err != nil {
-						return nil, err
+						slog.Error("EntCache getting ids", "err", err)
+						return v, nil
 					}
 				}
-				v, err = next.Mutate(ctx, m)
+			case ent.OpDelete:
+				if ider, ok := m.(interface {
+					IDs(ctx context.Context) ([]int, error)
+				}); ok {
+					ids, err = ider.IDs(ctx)
+					if err != nil {
+						slog.Error("EntCache getting ids", "err", err)
+					}
+				}
+				if v, err = next.Mutate(ctx, m); err != nil {
+					return nil, err
+				}
 			}
 			if len(ids) > 0 {
 				var keys = make([]Key, len(ids))
