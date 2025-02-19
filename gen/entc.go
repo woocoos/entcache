@@ -16,6 +16,7 @@ func QueryCache() entc.Option {
 	return func(c *gen.Config) error {
 		c.Templates = append(c.Templates, gen.MustParse(gen.NewTemplate("client").
 			ParseFS(_templates, "template/client.tmpl")))
+		c.Annotations.Set("EntCache", true)
 		return nil
 	}
 }
