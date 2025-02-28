@@ -9,11 +9,12 @@ import (
 
 // ctxOptions allows injecting runtime options.
 type ctxOptions struct {
-	evict    bool           // i.e. skip and invalidate entry.
-	key      Key            // entry key.
-	ref      bool           // indicates if the key is a reference key.
-	ttl      time.Duration  // entry duration.
-	skipMode cache.SkipMode // skip mode
+	evict        bool           // i.e. skip and invalidate entry.
+	skipNotFound bool           // skip cache if query return 0 row.
+	key          Key            // entry key.
+	ref          bool           // indicates if the key is a reference key.
+	ttl          time.Duration  // entry duration.
+	skipMode     cache.SkipMode // skip mode
 }
 
 var ctxOptionsKey ctxOptions
@@ -40,6 +41,18 @@ func Evict(ctx context.Context) context.Context {
 		return context.WithValue(ctx, ctxOptionsKey, &ctxOptions{evict: true})
 	}
 	c.evict = true
+	return ctx
+}
+
+// SkipNotFound returns a new Context that tells the Driver to ignore cache if zero row return.
+//
+//	client.T.Query().All(entcache.SkipNotFound(ctx))
+func SkipNotFound(ctx context.Context) context.Context {
+	c, ok := ctx.Value(ctxOptionsKey).(*ctxOptions)
+	if !ok {
+		return context.WithValue(ctx, ctxOptionsKey, &ctxOptions{skipNotFound: true})
+	}
+	c.skipNotFound = true
 	return ctx
 }
 

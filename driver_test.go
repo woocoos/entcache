@@ -181,6 +181,16 @@ func (t *driverSuite) TestWithXXEntryKey() {
 		t.True(drv.Cache.Has(context.Background(), string(key)), "evict should refresh the cache")
 		query(drv, Skip(ctx), all, []any{1})
 		t.Equal(uint64(0), drv.stats.Hits)
+
+		query(drv, SkipNotFound(context.Background()), all, []any{3})
+		t.Equal(uint64(0), drv.stats.Hits)
+		//time.Sleep(time.Second *
+		t.Require().NoError(t.DB.Exec(context.Background(),
+			"insert into users values (?,?)", []any{3, 20.1}, nil))
+		query(drv, SkipNotFound(context.Background()), all, []any{3})
+		t.Equal(uint64(0), drv.stats.Hits)
+		query(drv, SkipNotFound(context.Background()), all, []any{3})
+		t.Equal(uint64(1), drv.stats.Hits)
 	})
 }
 
@@ -195,6 +205,7 @@ func (t *driverSuite) TestTx() {
 	})))
 	ctx := context.Background()
 	tx, err := drv.Tx(ctx)
+	defer tx.Commit()
 	t.Require().NoError(err)
 	t.NoError(tx.Exec(ctx, "insert into users values (?,?)", []any{2, 30.1}, nil))
 	rows := &sql.Rows{}

@@ -143,6 +143,9 @@ func (d *Driver) Query(ctx context.Context, query string, args, v any) error {
 		vr.ColumnScanner = &recorder{
 			ColumnScanner: vr.ColumnScanner,
 			onClose: func(columns []string, values [][]driver.Value) {
+				if opts.skipNotFound && len(values) == 0 {
+					return
+				}
 				err := d.Cache.Set(ctx, string(opts.key), &Entry{Columns: columns, Values: values},
 					cache.WithTTL(opts.ttl), cache.WithSkip(opts.skipMode),
 				)
