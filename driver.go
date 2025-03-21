@@ -213,6 +213,11 @@ func (d *Driver) optionsFromContext(ctx context.Context, query string, args []an
 	return opts, nil
 }
 
+// Stats returns the cache statistics of the driver.
+func (d *Driver) Stats() Stats {
+	return d.stats
+}
+
 // rawCopy copies the driver values by implementing
 // the sql.Scanner interface.
 type rawCopy struct {

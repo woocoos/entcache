@@ -190,7 +190,7 @@ func (t *driverSuite) TestWithXXEntryKey() {
 		query(drv, SkipNotFound(context.Background()), all, []any{3})
 		t.Equal(uint64(0), drv.stats.Hits)
 		query(drv, SkipNotFound(context.Background()), all, []any{3})
-		t.Equal(uint64(1), drv.stats.Hits)
+		t.Equal(uint64(1), drv.Stats().Hits)
 	})
 }
 
