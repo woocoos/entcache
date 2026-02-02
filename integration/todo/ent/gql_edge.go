@@ -8,42 +8,42 @@ import (
 	"github.com/99designs/gqlgen/graphql"
 )
 
-func (t *Todo) Parent(ctx context.Context) (*Todo, error) {
-	result, err := t.Edges.ParentOrErr()
+func (_m *Todo) Parent(ctx context.Context) (*Todo, error) {
+	result, err := _m.Edges.ParentOrErr()
 	if IsNotLoaded(err) {
-		result, err = t.QueryParent().Only(ctx)
+		result, err = _m.QueryParent().Only(ctx)
 	}
 	return result, MaskNotFound(err)
 }
 
-func (t *Todo) Children(ctx context.Context) (result []*Todo, err error) {
+func (_m *Todo) Children(ctx context.Context) (result []*Todo, err error) {
 	if fc := graphql.GetFieldContext(ctx); fc != nil && fc.Field.Alias != "" {
-		result, err = t.NamedChildren(graphql.GetFieldContext(ctx).Field.Alias)
+		result, err = _m.NamedChildren(graphql.GetFieldContext(ctx).Field.Alias)
 	} else {
-		result, err = t.Edges.ChildrenOrErr()
+		result, err = _m.Edges.ChildrenOrErr()
 	}
 	if IsNotLoaded(err) {
-		result, err = t.QueryChildren().All(ctx)
+		result, err = _m.QueryChildren().All(ctx)
 	}
 	return result, err
 }
 
-func (t *Todo) Owner(ctx context.Context) (*User, error) {
-	result, err := t.Edges.OwnerOrErr()
+func (_m *Todo) Owner(ctx context.Context) (*User, error) {
+	result, err := _m.Edges.OwnerOrErr()
 	if IsNotLoaded(err) {
-		result, err = t.QueryOwner().Only(ctx)
+		result, err = _m.QueryOwner().Only(ctx)
 	}
 	return result, MaskNotFound(err)
 }
 
-func (u *User) Todos(ctx context.Context) (result []*Todo, err error) {
+func (_m *User) Todos(ctx context.Context) (result []*Todo, err error) {
 	if fc := graphql.GetFieldContext(ctx); fc != nil && fc.Field.Alias != "" {
-		result, err = u.NamedTodos(graphql.GetFieldContext(ctx).Field.Alias)
+		result, err = _m.NamedTodos(graphql.GetFieldContext(ctx).Field.Alias)
 	} else {
-		result, err = u.Edges.TodosOrErr()
+		result, err = _m.Edges.TodosOrErr()
 	}
 	if IsNotLoaded(err) {
-		result, err = u.QueryTodos().All(ctx)
+		result, err = _m.QueryTodos().All(ctx)
 	}
 	return result, err
 }

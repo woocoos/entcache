@@ -54,12 +54,10 @@ type TodoEdges struct {
 // ParentOrErr returns the Parent value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e TodoEdges) ParentOrErr() (*Todo, error) {
-	if e.loadedTypes[0] {
-		if e.Parent == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: todo.Label}
-		}
+	if e.Parent != nil {
 		return e.Parent, nil
+	} else if e.loadedTypes[0] {
+		return nil, &NotFoundError{label: todo.Label}
 	}
 	return nil, &NotLoadedError{edge: "parent"}
 }
@@ -76,12 +74,10 @@ func (e TodoEdges) ChildrenOrErr() ([]*Todo, error) {
 // OwnerOrErr returns the Owner value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e TodoEdges) OwnerOrErr() (*User, error) {
-	if e.loadedTypes[2] {
-		if e.Owner == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: user.Label}
-		}
+	if e.Owner != nil {
 		return e.Owner, nil
+	} else if e.loadedTypes[2] {
+		return nil, &NotFoundError{label: user.Label}
 	}
 	return nil, &NotLoadedError{edge: "owner"}
 }
@@ -110,7 +106,7 @@ func (*Todo) scanValues(columns []string) ([]any, error) {
 
 // assignValues assigns the values that were returned from sql.Rows (after scanning)
 // to the Todo fields.
-func (t *Todo) assignValues(columns []string, values []any) error {
+func (_m *Todo) assignValues(columns []string, values []any) error {
 	if m, n := len(values), len(columns); m < n {
 		return fmt.Errorf("mismatch number of scan values: %d != %d", m, n)
 	}
@@ -121,47 +117,47 @@ func (t *Todo) assignValues(columns []string, values []any) error {
 			if !ok {
 				return fmt.Errorf("unexpected type %T for field id", value)
 			}
-			t.ID = int(value.Int64)
+			_m.ID = int(value.Int64)
 		case todo.FieldText:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field text", values[i])
 			} else if value.Valid {
-				t.Text = value.String
+				_m.Text = value.String
 			}
 		case todo.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field created_at", values[i])
 			} else if value.Valid {
-				t.CreatedAt = value.Time
+				_m.CreatedAt = value.Time
 			}
 		case todo.FieldStatus:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field status", values[i])
 			} else if value.Valid {
-				t.Status = todo.Status(value.String)
+				_m.Status = todo.Status(value.String)
 			}
 		case todo.FieldPriority:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field priority", values[i])
 			} else if value.Valid {
-				t.Priority = int(value.Int64)
+				_m.Priority = int(value.Int64)
 			}
 		case todo.ForeignKeys[0]:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for edge-field todo_children", value)
 			} else if value.Valid {
-				t.todo_children = new(int)
-				*t.todo_children = int(value.Int64)
+				_m.todo_children = new(int)
+				*_m.todo_children = int(value.Int64)
 			}
 		case todo.ForeignKeys[1]:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for edge-field user_todos", value)
 			} else if value.Valid {
-				t.user_todos = new(int)
-				*t.user_todos = int(value.Int64)
+				_m.user_todos = new(int)
+				*_m.user_todos = int(value.Int64)
 			}
 		default:
-			t.selectValues.Set(columns[i], values[i])
+			_m.selectValues.Set(columns[i], values[i])
 		}
 	}
 	return nil
@@ -169,84 +165,84 @@ func (t *Todo) assignValues(columns []string, values []any) error {
 
 // Value returns the ent.Value that was dynamically selected and assigned to the Todo.
 // This includes values selected through modifiers, order, etc.
-func (t *Todo) Value(name string) (ent.Value, error) {
-	return t.selectValues.Get(name)
+func (_m *Todo) Value(name string) (ent.Value, error) {
+	return _m.selectValues.Get(name)
 }
 
 // QueryParent queries the "parent" edge of the Todo entity.
-func (t *Todo) QueryParent() *TodoQuery {
-	return NewTodoClient(t.config).QueryParent(t)
+func (_m *Todo) QueryParent() *TodoQuery {
+	return NewTodoClient(_m.config).QueryParent(_m)
 }
 
 // QueryChildren queries the "children" edge of the Todo entity.
-func (t *Todo) QueryChildren() *TodoQuery {
-	return NewTodoClient(t.config).QueryChildren(t)
+func (_m *Todo) QueryChildren() *TodoQuery {
+	return NewTodoClient(_m.config).QueryChildren(_m)
 }
 
 // QueryOwner queries the "owner" edge of the Todo entity.
-func (t *Todo) QueryOwner() *UserQuery {
-	return NewTodoClient(t.config).QueryOwner(t)
+func (_m *Todo) QueryOwner() *UserQuery {
+	return NewTodoClient(_m.config).QueryOwner(_m)
 }
 
 // Update returns a builder for updating this Todo.
 // Note that you need to call Todo.Unwrap() before calling this method if this Todo
 // was returned from a transaction, and the transaction was committed or rolled back.
-func (t *Todo) Update() *TodoUpdateOne {
-	return NewTodoClient(t.config).UpdateOne(t)
+func (_m *Todo) Update() *TodoUpdateOne {
+	return NewTodoClient(_m.config).UpdateOne(_m)
 }
 
 // Unwrap unwraps the Todo entity that was returned from a transaction after it was closed,
 // so that all future queries will be executed through the driver which created the transaction.
-func (t *Todo) Unwrap() *Todo {
-	_tx, ok := t.config.driver.(*txDriver)
+func (_m *Todo) Unwrap() *Todo {
+	_tx, ok := _m.config.driver.(*txDriver)
 	if !ok {
 		panic("ent: Todo is not a transactional entity")
 	}
-	t.config.driver = _tx.drv
-	return t
+	_m.config.driver = _tx.drv
+	return _m
 }
 
 // String implements the fmt.Stringer.
-func (t *Todo) String() string {
+func (_m *Todo) String() string {
 	var builder strings.Builder
 	builder.WriteString("Todo(")
-	builder.WriteString(fmt.Sprintf("id=%v, ", t.ID))
+	builder.WriteString(fmt.Sprintf("id=%v, ", _m.ID))
 	builder.WriteString("text=")
-	builder.WriteString(t.Text)
+	builder.WriteString(_m.Text)
 	builder.WriteString(", ")
 	builder.WriteString("created_at=")
-	builder.WriteString(t.CreatedAt.Format(time.ANSIC))
+	builder.WriteString(_m.CreatedAt.Format(time.ANSIC))
 	builder.WriteString(", ")
 	builder.WriteString("status=")
-	builder.WriteString(fmt.Sprintf("%v", t.Status))
+	builder.WriteString(fmt.Sprintf("%v", _m.Status))
 	builder.WriteString(", ")
 	builder.WriteString("priority=")
-	builder.WriteString(fmt.Sprintf("%v", t.Priority))
+	builder.WriteString(fmt.Sprintf("%v", _m.Priority))
 	builder.WriteByte(')')
 	return builder.String()
 }
 
 // NamedChildren returns the Children named value or an error if the edge was not
 // loaded in eager-loading with this name.
-func (t *Todo) NamedChildren(name string) ([]*Todo, error) {
-	if t.Edges.namedChildren == nil {
+func (_m *Todo) NamedChildren(name string) ([]*Todo, error) {
+	if _m.Edges.namedChildren == nil {
 		return nil, &NotLoadedError{edge: name}
 	}
-	nodes, ok := t.Edges.namedChildren[name]
+	nodes, ok := _m.Edges.namedChildren[name]
 	if !ok {
 		return nil, &NotLoadedError{edge: name}
 	}
 	return nodes, nil
 }
 
-func (t *Todo) appendNamedChildren(name string, edges ...*Todo) {
-	if t.Edges.namedChildren == nil {
-		t.Edges.namedChildren = make(map[string][]*Todo)
+func (_m *Todo) appendNamedChildren(name string, edges ...*Todo) {
+	if _m.Edges.namedChildren == nil {
+		_m.Edges.namedChildren = make(map[string][]*Todo)
 	}
 	if len(edges) == 0 {
-		t.Edges.namedChildren[name] = []*Todo{}
+		_m.Edges.namedChildren[name] = []*Todo{}
 	} else {
-		t.Edges.namedChildren[name] = append(t.Edges.namedChildren[name], edges...)
+		_m.Edges.namedChildren[name] = append(_m.Edges.namedChildren[name], edges...)
 	}
 }
 

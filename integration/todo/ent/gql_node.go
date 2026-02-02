@@ -96,27 +96,21 @@ func (c *Client) noder(ctx context.Context, table string, id int) (Noder, error)
 	case todo.Table:
 		query := c.Todo.Query().
 			Where(todo.ID(id))
-		query, err := query.CollectFields(ctx, todoImplementors...)
-		if err != nil {
-			return nil, err
+		if fc := graphql.GetFieldContext(ctx); fc != nil {
+			if err := query.collectField(ctx, true, graphql.GetOperationContext(ctx), fc.Field, nil, todoImplementors...); err != nil {
+				return nil, err
+			}
 		}
-		n, err := query.Only(entcache.WithRefEntryKey(ctx, "Todo", id))
-		if err != nil {
-			return nil, err
-		}
-		return n, nil
+		return query.Only(entcache.WithRefEntryKey(ctx, "Todo", id))
 	case user.Table:
 		query := c.User.Query().
 			Where(user.ID(id))
-		query, err := query.CollectFields(ctx, userImplementors...)
-		if err != nil {
-			return nil, err
+		if fc := graphql.GetFieldContext(ctx); fc != nil {
+			if err := query.collectField(ctx, true, graphql.GetOperationContext(ctx), fc.Field, nil, userImplementors...); err != nil {
+				return nil, err
+			}
 		}
-		n, err := query.Only(entcache.WithRefEntryKey(ctx, "User", id))
-		if err != nil {
-			return nil, err
-		}
-		return n, nil
+		return query.Only(entcache.WithRefEntryKey(ctx, "User", id))
 	default:
 		return nil, fmt.Errorf("cannot resolve noder from table %q: %w", table, errNodeInvalidID)
 	}
@@ -190,7 +184,7 @@ func (c *Client) noders(ctx context.Context, table string, ids []int) ([]Noder, 
 		idmap[id] = append(idmap[id], &noders[i])
 	}
 	switch table {
-	case todo.Table:
+	case "Todo":
 		query := c.Todo.Query().
 			Where(todo.IDIn(ids...))
 		query, err := query.CollectFields(ctx, todoImplementors...)
@@ -206,7 +200,7 @@ func (c *Client) noders(ctx context.Context, table string, ids []int) ([]Noder, 
 				*noder = node
 			}
 		}
-	case user.Table:
+	case "User":
 		query := c.User.Query().
 			Where(user.IDIn(ids...))
 		query, err := query.CollectFields(ctx, userImplementors...)

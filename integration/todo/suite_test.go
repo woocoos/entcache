@@ -2,7 +2,11 @@ package todo
 
 import (
 	"context"
+	"fmt"
+	"testing"
+
 	"entgo.io/contrib/entgql"
+	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
 	"github.com/99designs/gqlgen/client"
 	"github.com/99designs/gqlgen/graphql/handler"
@@ -16,7 +20,6 @@ import (
 	"github.com/woocoos/entcache/integration/todo/ent/migrate"
 	"github.com/woocoos/entcache/integration/todo/ent/todo"
 	"github.com/woocoos/entcache/integration/todo/ent/user"
-	"testing"
 
 	_ "github.com/mattn/go-sqlite3"
 	_ "github.com/woocoos/entcache/integration/todo/ent/runtime"
@@ -41,8 +44,10 @@ const (
 			}
 		}
 	}`
-	nodeTodo = `query {
-		node(id: 1) {
+)
+
+var nodeTodo = `query {
+		node(id: %q) {
 			__typename
 			... on Todo {
 				id
@@ -50,7 +55,6 @@ const (
 			}
 		}
 	}`
-)
 
 type Suite struct {
 	suite.Suite
@@ -62,7 +66,11 @@ type Suite struct {
 }
 
 func (s *Suite) SetupSuite() {
-	drv, err := sql.Open("sqlite3", "file:ent?mode=memory&cache=shared&_fk=1")
+	dsn := "file:entcache?mode=memory&cache=shared&_fk=1"
+	cli := enttest.Open(s.T(), dialect.SQLite, dsn,
+		enttest.WithMigrateOptions(migrate.WithGlobalUniqueID(true)))
+	defer cli.Close()
+	drv, err := sql.Open(dialect.SQLite, dsn)
 	s.Require().NoError(err)
 	s.nativeDriver = drv
 
@@ -84,10 +92,7 @@ func (s *Suite) SetupSuite() {
 		map[string]any{
 			"driverName": "redis",
 		})))
-
-	s.ent = enttest.NewClient(s.T(), enttest.WithOptions(ent.Driver(s.cacheDriver), ent.Debug()),
-		enttest.WithMigrateOptions(migrate.WithGlobalUniqueID(true)),
-	)
+	s.ent = ent.NewClient(ent.Driver(s.nativeDriver)).Debug()
 	s.mockData()
 	srv := handler.NewDefaultServer(NewSchema(s.ent))
 	srv.Use(entgql.Transactioner{TxOpener: s.ent})
@@ -137,7 +142,16 @@ func (s *Suite) TestGraphqlQuery() {
 }
 
 func (s *Suite) TestGraphqlNode() {
-	resp, err := s.gqlClient.RawPost(nodeTodo)
+	us := s.ent.User.Query().AllX(context.Background())
+	resp, err := s.gqlClient.RawPost(fmt.Sprintf(`query {
+		node(id: %d) {
+			__typename
+			... on Todo {
+				id
+				status
+			}
+		}
+	}`, us[0].ID))
 	s.Require().NoError(err)
 	s.Empty(string(resp.Errors))
 }

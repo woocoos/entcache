@@ -16,6 +16,8 @@ resolver:
 autobind:
   - github.com/woocoos/entcache/integration/todo/ent
 
+skip_mod_tidy: true
+
 # This section declares type mapping between the GraphQL and Go type systems.
 models:
   # Defines the ID field as Go 'int'.
